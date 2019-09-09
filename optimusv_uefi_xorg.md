@@ -127,6 +127,7 @@ mount /dev/sda1 /boot
 
 ```bash
 fallocate -l 2G /swapfile
+chmod 0600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 ```
