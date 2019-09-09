@@ -96,10 +96,6 @@ cp usr/share/portage/config/repos.conf etc/portage/repos.conf/gentoo.conf
 
 11. Network settings
 
-GOT TO HERE: NEED TO LOOK UP WHAT TO MOVE OVER TO KEEP WIFI WORKING
-
-OR, MAKE SURE `net-setup` IS EMERGED.
-
 ```bash
 cp --dereference /etc/resolv.conf /mnt/gentoo/etc
 ```
@@ -107,7 +103,7 @@ cp --dereference /etc/resolv.conf /mnt/gentoo/etc
 12. Mount filesystems
 
 ```bash
-mount --types proc /proc/mnt/gentoo/proc
+mount --types proc /proc /mnt/gentoo/proc
 mount --rbind /sys /mnt/gentoo/sys
 mount --make-rslave /mnt/gentoo/sys
 mount --rbind /dev /mnt/gentoo/dev
