@@ -156,7 +156,9 @@ emerge --ask --verbose --update --deep --newuse @world
 
 18. Configure `USE` flags
 
-Don't especially know what I want to add/remove yet. Do nothing for this step.
+I know I want xorg, not wayland, I want gtk, no qt, I want python support baked into things:
+
+```USE="xorg -wayland gtk -qt python"```
 
 19. Timezone and locale
 
