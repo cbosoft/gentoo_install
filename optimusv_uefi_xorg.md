@@ -77,7 +77,7 @@ ctrl-o, RET, c-x to save and then quit.
 Add makeopts:
 
 ```bash
-$ echo 'MAKEOPTS="-j5"' >> /mnt/gentoo/etc/portage/make.conf
+$ echo 'MAKEOPTS="-j9"' >> /mnt/gentoo/etc/portage/make.conf
 ```
 
 9. Select mirrors
