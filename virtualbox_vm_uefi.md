@@ -1,6 +1,6 @@
 # VirtualBox vm, UEFI
 
-1. Create new vm, 4Gb memory, 4 cores, ensure EFI mode is enabled.
+1. Create new vm, 4Gb memory, 4 cores, **ensure EFI mode is enabled**.
 2. Boot to minimal installation medium
 3. Set up partition using cfdisk:
 
