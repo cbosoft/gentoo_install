@@ -72,7 +72,7 @@ Update `COMMON_FLAGS`:
 COMMON_FLAGS="-march=native -02 -pipe"
 ```
 
-<ctrl-o>, <enter>, <ctrl-x> to save and then quit.
+ctrl-o, RET, c-x to save and then quit.
 
 Add makeopts:
 
