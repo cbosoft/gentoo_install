@@ -235,18 +235,16 @@ cd /usr/src/linux
 make menuconfig
 ```
 
-24. Mount `boot`
-
-Genkernel needs to see the EFI partition, so we need to mount it.
+24. Make kernel!
 
 ```bash
-mount /dev/sda1 /boot
+make
 ```
 
-25. Compile kernel and modules!
+25. Make modules! (and install)
 
 ```bash
-genkernel all
+make modules_install && make install
 ```
 
 26. Flesh out `fstab`
