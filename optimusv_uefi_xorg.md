@@ -321,7 +321,7 @@ emerge sys-fs/dosfstools
 34. Networking tools
 
 ```bash
-emerge net-misc dhcpcd
+emerge net-misc/dhcpcd
 rc-update add dhcpcd default
 ```
 
@@ -334,12 +334,16 @@ in GRUB in `make.conf`:
 echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
 ```
 
+Build GRUB2:
+
 ```bash
 emerge sys-boot/grub:2
 ```
 
+Setup GRUB2:
+
 ```bash
-mkdir /boot/EFI
+mkdir -p /boot/EFI
 grub-install --target=x86_64-efi --efi-directory=/boot/EFI
 ```
 
