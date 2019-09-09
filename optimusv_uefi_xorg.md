@@ -209,10 +209,33 @@ emerge app-portage/cfg-update
 
 If an install fails because config files need to update, run `cfg-update -u`.
 
-23. Getting `genkernel`
+23. Configure Kernel
+
+The Optimus V has an m2 SSD card, and a 1TB HDD, an internal wifi card, and an
+ethernet adapter, a card reader, an NVIDIA 765M and some other stuff. To boot,
+we need a video controller, a sata controller, a wifi controller, and some other
+assorted stuff:
+
+| Module          | Description                                             |
+|-----------------|---------------------------------------------------------|
+| ie31200_edac    | Host bridge, DRAM controller                            |
+| pcieport        | PCI controller                                          |
+| i915            | Intel integrated graphics, VGA controller               |
+| snd_hda_intel   | Audio controller                                        |
+| xhci_pci        | USB Controller: USB xHCI                                |
+| ehci_pci        | USB controller: USB EHCI controller                     |
+| lpc_ich         | ISA bridge                                              |
+| ahci            | SATA controller                                         |
+| i2c_i801        | SMBus controller                                        |
+| nouveau         | 3D controller: NVIDIA GeForce GTX 765m                  |
+| iwlwifi         | WiFi controller: Intel Centrino Wireless-N              |
+| rtsx_pci        | PCIe card reader                                        |
+
+Enable the required modules:
 
 ```bash
-emerge sys-kernel/genkernel
+cd /usr/src/linux
+make menuconfig
 ```
 
 24. Mount `boot`
