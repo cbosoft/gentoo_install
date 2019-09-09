@@ -5,10 +5,8 @@
 2. Set up wifi
 
 ```bash
-net-setup <IF>
+net-setup
 ```
-
-Replace `<IF>` with the name of the wifi interface (wlan0 or whatever).
 
 3. Set up partition using cfdisk:
 
