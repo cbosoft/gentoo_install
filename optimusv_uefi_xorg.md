@@ -8,32 +8,32 @@
 net-setup
 ```
 
-3. Set up partition using cfdisk:
+3. Set up partition using fdisk:
 
 ```bash
-$ cfdisk
+fdisk
 ```
 
 Creating the GPT partition table, adding two partitions: one 500Mb EFI system
-partition, and the remainder a linux partition:
+partition, and the remainder a linux partition on the SSD (`/dev/sdb2`):
 
 | Partition | Size | Use      | Format       |
 |-----------|------|----------|--------------|
-| /dev/sda1 | 500M | boot/ESP | vfat (fat32) |
-| /dev/sda2 | rest | root     | ext4         |
+| /dev/sdb1 | 500M | boot/ESP | vfat (fat32) |
+| /dev/sdb2 | rest | root     | ext4         |
 
 
 4. Format the partitions as necessary
 
 ```bash
-mkfs.vfat -F 32 /dev/sda1
-mkfs.ext4 /dev/sda2
+mkfs.vfat -F 32 /dev/sdb1
+mkfs.ext4 /dev/sdb2
 ```
 
 5. Mount the rootfs, change directory to its mount point
 
 ```bash
-mount /dev/sda2 /mnt/gentoo
+mount /dev/sdb2 /mnt/gentoo
 cd /mnt/gentoo
 ```
 
