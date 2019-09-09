@@ -1,6 +1,6 @@
 # Optimus V laptop, UEFI, xorg, i3-gaps, compton (sdhand fork)...
 
-1. Burn Manjaro (XFCE) to USB and boot
+1. Burn Manjaro (XFCE) to USB and boot **ensure to boot using EFI!**
 
 2. Set up wifi
 
