@@ -298,7 +298,8 @@ emerge sys-boot/grub:2
 ```
 
 ```bash
-grub-install --target=x86_64-efi --efi-directory=/boot # this does not put the *.efi files in the right place
+mkdir /boot/EFI
+grub-install --target=x86_64-efi --efi-directory=/boot/EFI
 ```
 
 36. Configure grub
@@ -340,3 +341,6 @@ passwd <USER>
 
 lol no, just getting started.
 
+41. Issue with pulseaudio in vm
+
+Have to disable audio via vm settings to get this to boot... Need to configure logs to persist after boot to debug this.
