@@ -191,8 +191,18 @@ what is the latest available.
 emerge app-portage/gentoolkit
 ```
 
+Install latest kernel using:
+
 ```bash
 emerge --ask =$(equery list -po sys-kernel/gentoo-sources | tail -1)
+```
+
+This will "unmask" this version of the kernel sources, and install it. To 
+automatically always choose the latest version, unmask all `gentoo-sources` 
+versions:
+
+```bash
+echo 'sys-kernel/gentoo-sources ~amd64' >> /etc/portage/package.keywords
 ```
 
 22. Managing config files
@@ -339,15 +349,14 @@ Build GRUB2:
 ```bash
 emerge sys-boot/grub:2
 ```
-
-Setup GRUB2:
+Install GRUB2:
 
 ```bash
 mkdir -p /boot/EFI
 grub-install --target=x86_64-efi --efi-directory=/boot/EFI
 ```
 
-36. Configure grub
+36. Configure GRUB2:
 
 ```bash
 grub-mkconfig -o /boot/grub/grub.cfg
