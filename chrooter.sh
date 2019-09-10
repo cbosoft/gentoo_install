@@ -6,13 +6,14 @@ then
   exit 1
 fi
 
-if stat $1
+if ! stat $1
 then
   echo "$1 is not a file"
   exit 1
 fi
 
-mount $1 /mnt/gentoo
+mount ${1}1 /mnt/gentoo
+mount ${1}2 /mnt/gentoo/boot
 cd /mnt/gentoo
 mount --types proc /proc proc
 mount --rbind /sys sys
