@@ -6,7 +6,7 @@ then
   exit 1
 fi
 
-if [[ stat $1 ]]
+if stat $1
 then
   echo "$1 is not a file"
   exit 1
