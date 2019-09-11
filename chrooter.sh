@@ -12,8 +12,12 @@ then
   exit 1
 fi
 
-mount ${1}1 /mnt/gentoo
-mount ${1}2 /mnt/gentoo/boot
+# This assumes the first partition is the boot partition, the second is the root.
+# no mucking about with swap partitions (using a swap file instead) and no separate 
+# /home partition.
+
+mount ${1}2 /mnt/gentoo
+mount ${1}1 /mnt/gentoo/boot
 cd /mnt/gentoo
 mount --types proc /proc proc
 mount --rbind /sys sys
