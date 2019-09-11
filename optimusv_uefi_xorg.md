@@ -1,5 +1,17 @@
 # Optimus V laptop, UEFI, xorg, i3-gaps, compton (sdhand fork)...
 
+# TOC
+1. [Preparing the disks](#preparing-the-disks)
+2. [Installing Stage3](#installing-stage3)
+3. [Build the kernel](#build-the-kernel)
+4. [Setting up the system](setting-up-the-system)
+5. [Install base system](#install-base-system)
+6. [Further system config](#further-system-config)
+7. [Bootloader](#bootloader)
+8. [Flesh out system](#flesh-out-system)
+
+# Preparing the disks
+
 1. Burn Manjaro (XFCE) to USB and boot **ensure to boot using EFI!**
 
 2. Set up wifi
@@ -37,7 +49,12 @@ mount /dev/sdb2 /mnt/gentoo
 cd /mnt/gentoo
 ```
 
-6. Obtain the stage3 tarball
+
+
+
+# Installing stage3
+
+1. Obtain the stage3 tarball
 
 Using links or whatever navigate to https://www.gentoo.org/downloads/mirrors/#uk.
 
@@ -54,13 +71,20 @@ A good mirror is `bytemark`:
 links https://mirror.bytemark.co.uk/gentoo/releases/amd64/autobuilds/current-stage3-amd64/
 ```
 
-7. unzip tarball
+2. unzip tarball
 
 ```bash
 tar xvpf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner
 ```
 
-8. Configure `make.conf`
+and that's all there is to it!
+
+
+
+
+# Install base system
+
+1. Configure `make.conf`
 
 ```bash
 nano /mnt/gentoo/etc/portage/make.conf
@@ -72,21 +96,23 @@ Update `COMMON_FLAGS`:
 COMMON_FLAGS="-march=native -02 -pipe"
 ```
 
-ctrl-o, RET, c-x to save and then quit.
-
 Add makeopts:
 
 ```bash
 $ echo 'MAKEOPTS="-j9"' >> /mnt/gentoo/etc/portage/make.conf
 ```
 
-9. Select mirrors
+2. Select mirrors
 
 ```bash
 mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf
 ```
 
-10. ebuild repo settings
+3. ebuild repo settings
+
+We'll be chrooting into the mounted rootfs, and using the `emerge` tool to install
+base system. Copy the repos.conf over to the system so emerge has some default 
+settings to work with.
 
 ```bash
 cd /mnt/gentoo
@@ -94,13 +120,15 @@ mkdir -p etc/portage/repos.conf
 cp usr/share/portage/config/repos.conf etc/portage/repos.conf/gentoo.conf
 ```
 
-11. Network settings
+4. Network settings
+
+In the chroot, need network (for downloading of stuff), so copy the dns config over.
 
 ```bash
 cp --dereference /etc/resolv.conf /mnt/gentoo/etc
 ```
 
-12. Mount filesystems
+7. Mount (pseudo)filesystems
 
 ```bash
 mount --types proc /proc /mnt/gentoo/proc
@@ -110,20 +138,18 @@ mount --rbind /dev /mnt/gentoo/dev
 mount --make-rslave /mnt/gentoo/dev
 ```
 
-13. Entering the chroot
+8. Entering the chroot
 
 ```bash
 chroot /mnt/gentoo /bin/bash
 source /etc/profile && export PS1="(chroot) $PS1"
 ```
 
-14. Mount boot / EFI System Partition (ESP)
 
-```bash
-mount /dev/sda1 /boot
-```
 
-14a. Create `swapfile`
+# Setting up the system
+
+1. Create `swapfile`
 
 ```bash
 fallocate -l 2G /swapfile
@@ -132,13 +158,13 @@ mkswap /swapfile
 swapon /swapfile
 ```
 
-15. Update ebuild repository
+2. Update ebuild repository
 
 ```bash
 emerge --sync
 ```
 
-16. Selecting profile
+3. Selecting profile
 
 Default profile should be fine (latest basic profile should be automatically
 selected. Can, however, change profile with:
@@ -148,19 +174,19 @@ eselect profile list # to list profiles available
 eselect profile set $n # replace $n with profile number to use
 ```
 
-17. Update @world
+4. Update @world
 
 ```bash
 emerge --ask --verbose --update --deep --newuse @world
 ```
 
-18. Configure `USE` flags
+5. Configure `USE` flags
 
 I know I want xorg, not wayland, I want gtk, no qt, I want python support baked into things:
 
 ```USE="xorg -wayland gtk -qt python"```
 
-19. Timezone and locale
+6. Timezone and locale
 
 ```bash
 echo "Europe/London" > /etc/timezone
@@ -176,13 +202,17 @@ Following the above creates 6 locales, the last being en_GB UTF-8.
 eselect locale set 6
 ```
 
-20. Update environment
+7. Update environment
 
 ```bash
 env-update && source /etc/profile && export PS1="(chroot) $PS1"
 ```
 
-21. Installing kernel sources
+
+
+# Build the kernel
+
+1. Installing kernel sources
 
 Want latest version of the Gentoo patched kernel sources, use `equery` to find
 what is the latest available.
@@ -205,7 +235,7 @@ versions:
 echo 'sys-kernel/gentoo-sources ~amd64' >> /etc/portage/package.keywords
 ```
 
-22. Managing config files
+2. Managing config files
 
 Installing packages sometimes requires an update to configuration files. This is
 done with packages like `cfg-update` from `app-portage`.
@@ -216,7 +246,15 @@ emerge app-portage/cfg-update
 
 If an install fails because config files need to update, run `cfg-update -u`.
 
-23. Configure Kernel
+3. **Mount boot / EFI System Partition (ESP)**
+
+**DO NOT FORGET THIS STEP IT WILL BE FRUSTRATING LATER***
+
+```bash
+mount /dev/sda1 /boot
+```
+
+4. Configure and build kernel
 
 The Optimus V has an m2 SSD card, and a 1TB HDD, an internal wifi card, and an
 ethernet adapter, a card reader, an NVIDIA 765M and some other stuff. To boot,
@@ -245,19 +283,29 @@ cd /usr/src/linux
 make menuconfig
 ```
 
-24. Make kernel!
+Make kernel!
 
 ```bash
-make
+make && make modules_install && make install
 ```
 
-25. Make modules! (and install)
+**alternatively...**
+
+Use genkernel to get a good starting point from which to improve:
 
 ```bash
-make modules_install && make install
+emerge sys-kernel/genkernel
+genkernel --menuconfig
 ```
 
-26. Flesh out `fstab`
+This may involve updating some config files, or policy stuff.
+
+
+
+
+# Further system config
+
+1. Flesh out `fstab`
 
 ```bash
 echo "/dev/sda1 /boot vfat  defaults,noatime  0 2" >> /etc/fstab
@@ -265,14 +313,14 @@ echo "/dev/sda2 /     ext4  noatime           0 1" >> /etc/fstab
 echo "/swapfile none  swap  sw                0 1" >> /etc/fstab
 ```
 
-27. Hostname and domain
+2. Hostname and domain
 
 ```bash
 echo 'hostname="gbox"' > /etc/conf.d/hostname
 echo 'dns_domain_lo="matrx"' > /etc/conf.d/net
 ```
 
-28. Network config
+3. Network config
 
 ```bash
 emerge --ask --noreplace net-misc/netifrc
@@ -291,13 +339,13 @@ ln -s net.lo net.<ETH>
 rc-update add net.<ETH> default
 ```
 
-29. Root password
+4. Root password
 
 ```bash
 passwd
 ```
 
-30. Init config
+5. Init config
 
 Edit `rc.conf` as desired (at least enable parallel start).
 
@@ -305,13 +353,13 @@ Edit `rc.conf` as desired (at least enable parallel start).
 nano /etc/rc.conf
 ```
 
-31. Update keymaps
+6. Update keymaps
 
 ```bash
 nano /etc/conf.d/keymaps
 ```
 
-32. System logging
+7. System logging
 
 Keep it simple: use `sysklogd` as logger.
 
@@ -320,7 +368,7 @@ emerge app-admin/sysklogd
 rc-update add sysklogd default
 ```
 
-33. Filesystems
+8. Filesystems
 
 Install drivers for `vfat` filesystems.
 
@@ -328,14 +376,19 @@ Install drivers for `vfat` filesystems.
 emerge sys-fs/dosfstools
 ```
 
-34. Networking tools
+9. Networking tools
 
 ```bash
 emerge net-misc/dhcpcd
 rc-update add dhcpcd default
 ```
 
-35. Install boot manager (GRUB2)
+
+
+
+# Bootloader
+
+1. Install boot manager (GRUB2)
 
 Before we install GRUB2, we need to set what system we're going to be managing
 in GRUB in `make.conf`:
@@ -356,13 +409,13 @@ mkdir -p /boot/EFI
 grub-install --target=x86_64-efi --efi-directory=/boot/EFI
 ```
 
-36. Configure GRUB2:
+2. Configure GRUB2:
 
 ```bash
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-37. Reboot
+3. Reboot
 
 Reboot the system
 
@@ -373,7 +426,12 @@ reboot
 
 and remove the installation media. Log in to root with the password set earlier.
 
-38. Check network
+
+
+
+# Flesh out system
+
+1. Check network
 
 Check network is running properly
 
@@ -381,7 +439,7 @@ Check network is running properly
 ping 8.8.8.8
 ```
 
-39. Adding a(some) user(s)
+2. Adding a(some) user(s)
 
 Add a user with ability to use su, audio, portage, and video. Other groups
 include `usb`, `games`, `floppy`.
@@ -391,10 +449,6 @@ useradd -m -G users,wheel,audio,portage,video -s /bin/bash <USER>
 passwd <USER>
 ```
 
-40. Done!
+3. Done!
 
-lol no, just getting started.
-
-41. Issue with pulseaudio in vm
-
-Have to disable audio via vm settings to get this to boot... Need to configure logs to persist after boot to debug this.
+lol no, just getting started... xorg... i3... python3... vim... vimb...
