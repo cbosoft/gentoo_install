@@ -9,6 +9,8 @@ Steps taken to install Gentoo Linux.
 
 ### `chrooter.sh`
 
+Script to automate the mounting of /sys and /dev to chrootfs.
+
 Download using:
 
 ```bash
